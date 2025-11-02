@@ -1,5 +1,6 @@
 from .fileHandler.files import get_frequency_list, generate_codes, read_file_as_bytes, write_compressed_file
 from .huffman.hufman import create_huffman_tree
+from .decompressing.huffman_decompressor import huff_decompress_file
 
 if __name__ == "__main__":
     print("RAU: Compressor Tool")
@@ -17,3 +18,7 @@ if __name__ == "__main__":
 
 
     write_compressed_file("output.rau", encoded_bitstring, frequency)
+
+    huff_decompress_file("output.rau")
+    print("Decompressing Done")
+    
