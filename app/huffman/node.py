@@ -13,4 +13,4 @@ class Node:
         return str(self.frequency)
 
     def __lt__(self, other):
-        self.frequency < other.frequency
+        return self.frequency < other.frequency
