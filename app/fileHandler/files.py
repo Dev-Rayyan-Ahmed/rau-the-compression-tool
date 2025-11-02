@@ -69,7 +69,7 @@ def write_compressed_file(output_path, encoded_bitstring, frequency_list):
     
     with open(output_path, 'wb') as f:
         # magic header will me unique to "our" encoding
-        f.write("RAU1")
+        f.write(b"RAU1")
                 
         for freq in frequency_list:
             # if freq > 0:  we may use this logic but this will make some difficulties in decompressing
