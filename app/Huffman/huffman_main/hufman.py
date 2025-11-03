@@ -1,5 +1,5 @@
-from app.huffman.node import Node
-from app.huffman.min_heap.MinHeap import MinHeap
+from app.Huffman.huffman_main.node import Node
+from app.Huffman.huffman_main.min_heap.MinHeap import MinHeap
 
 # from app.fileHandler.files import frequency
 

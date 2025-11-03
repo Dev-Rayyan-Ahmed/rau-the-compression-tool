@@ -1,11 +1,11 @@
-from .fileHandler.files import (
+from .Huffman.fileHandler.files import (
     get_frequency_list,
     generate_codes,
     read_file_as_bytes,
     write_compressed_file,
 )
-from .huffman.hufman import create_huffman_tree
-from .decompressing.huffman_decompressor import huff_decompress_file
+from .Huffman.huffman_main.hufman import create_huffman_tree
+from .Huffman.decompressing.huffman_decompressor import huff_decompress_file
 
 if __name__ == "__main__":
     print("RAU: Compressor Tool")

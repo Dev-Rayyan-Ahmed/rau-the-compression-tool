@@ -1,5 +1,5 @@
-from app.huffman.hufman import create_huffman_tree
-from app.fileHandler.files import read_compressed_file
+from app.Huffman.huffman_main.hufman import create_huffman_tree
+from app.Huffman.fileHandler.files import read_compressed_file
 
 
 def byte_to_bits(byte_data: str):
