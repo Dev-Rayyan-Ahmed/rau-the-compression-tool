@@ -3,7 +3,8 @@ const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('path');
 
 const isMac = process.platform === 'darwin';
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = process.env.NODE_ENV !== 'production';
+const PYTHON_ROOT_DIR = path.join(__dirname, '..')
 
 // create the main window
 function createMainWindow() {
@@ -110,8 +111,11 @@ ipcMain.handle('dialog:openFile', async () => {
 ipcMain.handle('huffman:run', async (event, scriptPath, option, filePath) => {
     const promise = new Promise((resolve, rejects) => {
 
-        // run a sub process of python script 
-        const py = spawn(process.platform === 'win32' ? 'python' : 'python3', ['-m', scriptPath, option, filePath]);
+        const command = process.platform === 'win32' ? 'python' : 'python3';
+        const args = ['-m', scriptPath, option, filePath];
+
+        // now run a sub process of python script 
+        const py = spawn(command, args, { cwd: PYTHON_ROOT_DIR });
         let stdout = '';
         let stderr = '';
 

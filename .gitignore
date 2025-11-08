@@ -1,6 +1,7 @@
 /venv
 .env
+.vscode
 __pycache__
 output.rau
 Decompressed.txt
-node_modules            
+node_modules/
