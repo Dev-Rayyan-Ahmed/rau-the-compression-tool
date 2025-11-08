@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAU Compressor</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+
+
+    <div class="titlebar">
+        <div class="app-title">
+            <img src="images/icon-rau.png" alt="rau">
+        </div>
+        <div class="window-controls">
+            <button id="min-btn">—</button>
+            <button id="max-btn">☐</button>
+            <button id="close-btn">×</button>
+        </div>
+    </div>
+
+    <div class="body">
+
+        <div class="app">
+            <header>
+                <h1>RAU Compressor</h1>
+                <p>Fast • Secure • Lightweight</p>
+            </header>
+
+            <main>
+                <div class="drop-zone" id="dropZone">
+                    <p>Drag & drop your file here</p>
+                    <span>or</span>
+                    <button id="chooseFileBtn">Choose File</button>
+                    <input type="file" id="fileInput" hidden />
+                </div>
+
+                <div class="actions">
+                    <button id="compressBtn" class="primary">Compress</button>
+                    <button id="decompressBtn" class="secondary">Decompress</button>
+                </div>
+
+                <div class="progress hidden" id="progressContainer">
+                    <div class="bar" id="progressBar"></div>
+                </div>
+
+                <div class="output" id="output">
+                    <p>No file processed yet</p>
+                </div>
+            </main>
+
+            <footer>
+                <small>© 2025 RAU Labs</small>
+            </footer>
+        </div>
+
+
+    </div>
+    <script src="js/renderer.js"></script>
+</body>
+
+</html>
