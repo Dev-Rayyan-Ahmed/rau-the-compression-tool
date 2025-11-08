@@ -14,11 +14,11 @@ function createMainWindow() {
         frame: false,
         titleBarStyle: "hidden",
         transparent: false,
-        titleBarOverlay: {
-            color: "#0f1117", // background color for overlay area
-            symbolColor: "#e3e6ee", // color of window control buttons
-            height: 28
-        },
+        // titleBarOverlay: {
+        //     color: "#0f1117", // background color for overlay area
+        //     symbolColor: "#e3e6ee", // color of window control buttons
+        //     height: 28
+        // },
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: true,
@@ -30,9 +30,20 @@ function createMainWindow() {
     if (isDev) {
         mainWindow.webContents.openDevTools();
     }
-
+    mainWindow.setMenuBarVisibility(false)
     mainWindow.loadFile(path.join(__dirname, "./renderer/index.html"));
 
+    // listening the event from render named min max close using inter process communication
+    // minimize windows
+    ipcMain.on("window:minimize", () => mainWindow.minimize());
+    // maximize windows
+    ipcMain.on("window:maximize", () => {
+        if (mainWindow.isMaximized()) mainWindow.unmaximize();
+        else mainWindow.maximize();
+    });
+
+    // close window 
+    ipcMain.on("window:close", () => mainWindow.close());
 }
 
 
@@ -79,6 +90,61 @@ const menu = [
 //     }
 // ]
 
+// response to ipc render 
+
+
+// Open file dialog and return full path(s)
+ipcMain.handle('dialog:openFile', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+        properties: ['openFile'],
+        // optionally specify filters: [{ name: 'All Files', extensions: ['*'] }]
+    });
+    if (canceled) return null;
+    const filePath = filePaths[0]
+    const fileName = require('path').basename(filePath);
+
+    return { filePath, fileName };
+});
+
+// 
+ipcMain.handle('huffman:run', async (event, scriptPath, option, filePath) => {
+    const promise = new Promise((resolve, rejects) => {
+
+        // run a sub process of python script 
+        const py = spawn(process.platform === 'win32' ? 'python' : 'python3', ['-m', scriptPath, option, filePath]);
+        let stdout = '';
+        let stderr = '';
+
+        // py is sub process and we are listening its outout so that we can show result on render
+        py.stdout.on('data', (data) => {
+            stdout += data.toString();
+            // forward progress to renderer (one-way)
+            event.sender.send('huffman:stdout', data.toString());
+        });
+
+        // same with error
+        py.stderr.on('data', (data) => {
+            stderr += data.toString();
+            // forward progress to renderer (one-way)
+            event.sender.send('huffman:stderr', data.toString());
+        });
+
+        py.on('close', (code) => {
+            if (code === 0) {
+                resolve({ success: true, stdout })
+            } else {
+                resolve({ success: false, code, stdout, stderr })
+            }
+        });
+
+        py.on('error', (err) => {
+            rejects({ success: false, error: err.message })
+        });
+
+    });
+
+    return promise
+})
 
 // close perfectly 
 app.on('window-all-closed', () => {
