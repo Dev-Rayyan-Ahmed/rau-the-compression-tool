@@ -1,0 +1,196 @@
+:root {
+    --bg: #0f1117;
+    --fg: #e3e6ee;
+    --accent: #4f8cff;
+    --muted: #7a7f8c;
+    --border: #20242f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+.body {
+    background: var(--bg);
+    color: var(--fg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    flex-direction: column;
+
+}
+
+.titlebar {
+    -webkit-app-region: drag;
+    /* Allows you to drag the window */
+    background: #151820;
+    color: #e3e6ee;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    border-bottom: 1px solid #20242f;
+    width: 100vw;
+    position: fixed;
+}
+
+.titlebar .app-title img {
+    height: 28px;
+    position: absolute;
+    top: 3px;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+    -webkit-app-region: no-drag;
+    /* Buttons are not draggable */
+}
+
+.window-controls button {
+    background: transparent;
+    color: #7a7f8c;
+    border: none;
+    font-size: 14px;
+    width: 30px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0px;
+}
+
+.window-controls button:hover {
+    background: #222630;
+    color: white;
+}
+
+#close-btn:hover{
+    background: rgb(233, 32, 32);
+    color: white;
+}
+
+.app {
+    width: 380px;
+    background: #151820;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+header p {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    text-align: center;
+    padding: 2rem 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.drop-zone:hover {
+    border-color: var(--accent);
+}
+
+.drop-zone p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.drop-zone span {
+    display: block;
+    color: var(--muted);
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+}
+
+button {
+    background: none;
+    border: none;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+button.primary {
+    background: var(--accent);
+    color: white;
+}
+
+button.primary:hover {
+    background: #3c70d9;
+}
+
+button.secondary {
+    background: #1d212e;
+    color: var(--fg);
+}
+
+button.secondary:hover {
+    background: #262b3b;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+}
+
+.progress {
+    width: 100%;
+    height: 6px;
+    background: #1b1e27;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress .bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+.output {
+    background: #1a1d27;
+    border-radius: 10px;
+    padding: 0.8rem;
+    min-height: 50px;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+footer {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 1rem;
+}
