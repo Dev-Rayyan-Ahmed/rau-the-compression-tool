@@ -1,0 +1,19 @@
+{
+  "name": "rau-gui",
+  "productName": "rau",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "file-compressor"
+  ],
+  "author": "cyxabima",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "electron": "^39.0.0",
+    "toastify-js": "^1.12.0"
+  }
+}
