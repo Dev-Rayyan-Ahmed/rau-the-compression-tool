@@ -7,6 +7,7 @@ const progressBar = document.getElementById("progressBar");
 const progressContainer = document.getElementById("progressContainer");
 const output = document.getElementById("output");
 let selectedFilePath = null;
+let outputPath = null;
 
 
 console.log(versions.node())
@@ -90,7 +91,11 @@ async function runCompression(e, option) {
 
     // live logs already set below via onStdout/onStderr
     const result = await resultPromise;
-    updateOutput('\nProcess finished:\n' + JSON.stringify(result, null, 2));
+    if (!result.success) {
+        updateOutput("Error: Failed To compress File. try again");
+    }
+
+    updateOutput("Success: File Saved in Folder:" + `${outputPath}`);
     selectedFilePath = null;
 
 }
