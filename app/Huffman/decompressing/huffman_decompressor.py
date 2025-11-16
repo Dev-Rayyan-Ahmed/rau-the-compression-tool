@@ -1,5 +1,5 @@
 from app.Huffman.huffman_main.hufman import create_huffman_tree
-from app.Huffman.fileHandler.files import read_compressed_file
+from app.Huffman.fileHandler.files import read_compressed_file, RLE_read_compressed_file
 
 
 def byte_to_bits(byte_data: str):
@@ -11,7 +11,7 @@ def byte_to_bits(byte_data: str):
 
 
 def huff_decompress_file(path: str):
-    freq_list, compressed_bytes, padding = read_compressed_file(path)
+    freq_list, compressed_bytes, padding = RLE_read_compressed_file(path)
     root = create_huffman_tree(freq_list)
     bitString = byte_to_bits(compressed_bytes)
     if padding > 0:
