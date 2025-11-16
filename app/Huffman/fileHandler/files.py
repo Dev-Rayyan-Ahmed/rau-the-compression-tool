@@ -11,7 +11,7 @@ def get_frequency_list(data):
     return frequency_list
 
 def encode_frequency_list(frequency_list):
-    encoded_bytes = bytearray()
+    encoded_freq_list = []
     i = 0
     
     while i < 256:
@@ -19,7 +19,7 @@ def encode_frequency_list(frequency_list):
         
         if freq > 0:
             # for non-zero freq
-            encoded_bytes.extend(freq.to_bytes(4, byteorder="big"))
+            encoded_freq_list.append(freq)
             i += 1
             
         else:
@@ -31,32 +31,17 @@ def encode_frequency_list(frequency_list):
                 running_length += 1
                 j += 1
             
-            if running_length >= 1:
-                # adding control byte and Running length
-                encoded_bytes.append(0xFF)
-                encoded_bytes.append(running_length)
+            if running_length >= 3:
+                # adding RLE-indicator and Running length
+                encoded_freq_list.append(-1)
+                encoded_freq_list.append(running_length)
                 
                 i += running_length
+            else:
+                encoded_freq_list.append(freq)
+                i +=1
 
-    return bytes(encoded_bytes)
-
-def RLE_write_compressed_file(output_path, encoded_bitstring, frequency_list):
-    
-    compressed_bytes, padding = bits_to_bytes(encoded_bitstring)
-    encoded_freq_bytes = encode_frequency_list(frequency_list) 
-
-    with open(output_path, "wb") as f:
-        f.write(b"RAU1") 
-        
-        f.write(len(encoded_freq_bytes).to_bytes(4, byteorder="big")) 
-        
-        f.write(encoded_freq_bytes)
-
-        f.write(bytes([padding]))
-
-        f.write(compressed_bytes)
-
-    print(f"File saved: {output_path}")
+    return encoded_freq_list
 
 def decode_frequency_list(encoded_freq_list):
     freq_list = [0]*256
@@ -67,7 +52,7 @@ def decode_frequency_list(encoded_freq_list):
 
     while i<256 and encoded_ptr < len(encoded_freq_list):
         
-        if encoded_freq_list[encoded_ptr] == 0xFF:
+        if encoded_freq_list[encoded_ptr] == -1:
             # if true, we hav found RLE Encoding
             running_length = encoded_freq_list[encoded_ptr+1]
 
@@ -75,32 +60,13 @@ def decode_frequency_list(encoded_freq_list):
             i += running_length
             encoded_ptr += 2
         else:
-            freq_byte = encoded_freq_list[encoded_ptr : encoded_ptr+4]
-            freq = int.from_bytes(freq_byte, byteorder="big")
+            freq = encoded_freq_list[encoded_ptr]
             freq_list[i] = freq
 
             i +=1
-            encoded_ptr +=4
+            encoded_ptr +=1
     
     return freq_list
-
-def RLE_read_compressed_file(input_path):
-    
-    with open(input_path, "rb") as f:
-        magic = f.read(4)
-        if magic != b'RAU1':
-            raise ValueError ("Invalid File Format : Not a RAU Compressed file")
-        
-        encoded_freq_list_len = int.from_bytes(f.read(4), byteorder= "big")
-        encoded_freq_list = f.read(encoded_freq_list_len)
-        frequency_list = decode_frequency_list(encoded_freq_list)
-        
-        padding = f.read(1)[0]
-        compressed_bytes = f.read()
-    
-    return frequency_list, compressed_bytes, padding
-
-
 
 def generate_codes(node):
     codes = {}
@@ -144,17 +110,29 @@ def bits_to_bytes(bitstring: str):
 def write_compressed_file(output_path, encoded_bitstring, frequency_list):
     compressed_bytes, padding = bits_to_bytes(encoded_bitstring)
 
+    print(frequency_list)
+    print(len(frequency_list))
+    print("\n\n\n\n")
+
+    frequency_list = encode_frequency_list(frequency_list)
+
+    print(frequency_list)
+    print(len(frequency_list))
+
     with open(output_path, "wb") as f:
         # magic header will me unique to "our" encoding
         f.write(b"RAU1")
 
+        f.write(bytes([len(frequency_list)]))
+
         for freq in frequency_list:
             # if freq > 0:  we may use this logic but this will make some difficulties in decompressing
             # writing frequency in file
-            f.write(freq.to_bytes(4, byteorder="big"))
+            f.write(freq.to_bytes(4, byteorder="big", signed= True))
 
         # Write padding
         f.write(bytes([padding]))
+
 
         # Write compressed data
         f.write(compressed_bytes)
@@ -168,8 +146,11 @@ def read_compressed_file(input_path):
         magic = f.read(4)
         if magic != b"RAU1":
             raise ValueError("Invalid file format — not a RAU compressed file!")
+        
+        frequency_list_len = f.read(1)[0]
 
-        frequency_list = [int.from_bytes(f.read(4), "big") for _ in range(256)]
+        frequency_list = [int.from_bytes(f.read(4), "big", signed= True) for _ in range(frequency_list_len)]
+        frequency_list = decode_frequency_list(frequency_list)
 
         padding = ord(f.read(1))
 
