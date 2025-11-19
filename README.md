@@ -23,6 +23,7 @@ Follow these steps to get RAU running on your computer.
 - python
 - node 
 - git
+- npm is necessary
 
 ```bash
 git clone https://github.com/Dev-Rayyan-Ahmed/rau-the-compression-tool
