@@ -6,3 +6,4 @@ output.rau
 Decompressed.txt
 *.txt
 node_modules/
+*.rau
