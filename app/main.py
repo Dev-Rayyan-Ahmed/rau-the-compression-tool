@@ -1,30 +1,19 @@
 import sys
-from .Huffman.fileHandler.files import (
-    get_frequency_list,
-    generate_codes,
-    read_file_as_bytes,
-    write_compressed_file,
-)
-from .Huffman.huffman_main.hufman import create_huffman_tree
-from .Huffman.decompressing.huffman_decompressor import huff_decompress_file
+import os
+from .huffman.fileHandler.files import compress_file
+from .huffman.decompressing.huffman_decompressor import huff_decompress_file
 
 
 def run_from_electron():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         raise Exception("too less arguments")
+    output_path = sys.argv[3] if len(sys.argv) > 3 else os.getcwd()
     file = sys.argv[2]
     if sys.argv[1] == "-c":
-        data = read_file_as_bytes(file)
-        frequency = get_frequency_list(data=data)
-        
-        root = create_huffman_tree(frequency)
-        codes = generate_codes(root)
-
-        encoded_bitstring = "".join(codes[char] for char in data)
-        write_compressed_file("output.rau", encoded_bitstring, frequency)
+        compress_file(file, output_path)
         sys.stdout.flush()  # IMPORTANT: Makes sure the output is sent right away
     elif sys.argv[1] == "-d":
-        huff_decompress_file(file)
+        huff_decompress_file(file, output_path)
         print("Decompressing Done")
 
 

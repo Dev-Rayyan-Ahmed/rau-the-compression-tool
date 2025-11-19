@@ -1,5 +1,5 @@
-from app.Huffman.huffman_main.node import Node
-from app.Huffman.huffman_main.min_heap.MinHeap import MinHeap
+from app.huffman.huffman_main.node import Node
+from app.huffman.huffman_main.min_heap.MinHeap import MinHeap
 
 # from app.fileHandler.files import frequency
 
@@ -30,16 +30,3 @@ def create_huffman_tree(freq_list: list):
     tree = min_heap.dequeue()
 
     return tree
-
-
-if __name__ == "__main__":
-
-    # frequency_list = [0] * 256
-    # frequency_list[98] = 1
-    # frequency_list[111] = 2
-    # frequency_list[107] = 2
-    # frequency_list[101] = 3
-    # frequency_list[112] = 1
-    # huffman_tree = create_huffman_tree(frequency)
-    # print(huffman_tree)
-    pass

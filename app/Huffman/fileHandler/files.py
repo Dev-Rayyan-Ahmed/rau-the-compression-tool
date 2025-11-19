@@ -1,3 +1,7 @@
+from app.huffman.huffman_main.hufman import create_huffman_tree
+import os
+
+
 def read_file_as_bytes(filepath):
     with open(filepath, "rb") as f:
         data = f.read()
@@ -10,18 +14,19 @@ def get_frequency_list(data):
         frequency_list[byte] += 1
     return frequency_list
 
+
 def encode_frequency_list(frequency_list):
     encoded_freq_list = []
     i = 0
-    
+
     while i < 256:
         freq = frequency_list[i]
-        
+
         if freq > 0:
             # for non-zero freq
             encoded_freq_list.append(freq)
             i += 1
-            
+
         else:
             # if frequency is zero then we use RLE to encode running zeros
             running_length = 0
@@ -30,31 +35,32 @@ def encode_frequency_list(frequency_list):
             while j < 256 and frequency_list[j] == 0 and running_length < 255:
                 running_length += 1
                 j += 1
-            
+
             if running_length >= 3:
                 # adding RLE-indicator and Running length
                 encoded_freq_list.append(-1)
                 encoded_freq_list.append(running_length)
-                
+
                 i += running_length
             else:
                 encoded_freq_list.append(freq)
-                i +=1
+                i += 1
 
     return encoded_freq_list
 
+
 def decode_frequency_list(encoded_freq_list):
-    freq_list = [0]*256
-    
+    freq_list = [0] * 256
+
     # i is pointer for Freq_list & encoded_otr runs on Encoded_freq_list
     i = 0
     encoded_ptr = 0
 
-    while i<256 and encoded_ptr < len(encoded_freq_list):
-        
+    while i < 256 and encoded_ptr < len(encoded_freq_list):
+
         if encoded_freq_list[encoded_ptr] == -1:
             # if true, we hav found RLE Encoding
-            running_length = encoded_freq_list[encoded_ptr+1]
+            running_length = encoded_freq_list[encoded_ptr + 1]
 
             # freq_list is already filled with 0s, so we just skip them
             i += running_length
@@ -63,10 +69,11 @@ def decode_frequency_list(encoded_freq_list):
             freq = encoded_freq_list[encoded_ptr]
             freq_list[i] = freq
 
-            i +=1
-            encoded_ptr +=1
-    
+            i += 1
+            encoded_ptr += 1
+
     return freq_list
+
 
 def generate_codes(node):
     codes = {}
@@ -107,32 +114,31 @@ def bits_to_bytes(bitstring: str):
     return bytes(output), padding
 
 
-def write_compressed_file(output_path, encoded_bitstring, frequency_list):
+def write_compressed_file(input_file, output_path, encoded_bitstring, frequency_list):
     compressed_bytes, padding = bits_to_bytes(encoded_bitstring)
-
-    print(frequency_list)
-    print(len(frequency_list))
-    print("\n\n\n\n")
 
     frequency_list = encode_frequency_list(frequency_list)
 
-    print(frequency_list)
-    print(len(frequency_list))
-
     with open(output_path, "wb") as f:
-        # magic header will me unique to "our" encoding
-        f.write(b"RAU1")
+        # magic header will be unique to "our" encoding
+        h = f.write(b"RAU1")
 
+        name, ext = os.path.splitext(os.path.basename(input_file))
+        ext_bytes = ext.encode()
+
+        # write the length of extension,
+        f.write(len(ext_bytes).to_bytes(1, "big"))
+
+        # Write extension bytes
+        f.write(ext_bytes)
         f.write(bytes([len(frequency_list)]))
 
         for freq in frequency_list:
-            # if freq > 0:  we may use this logic but this will make some difficulties in decompressing
             # writing frequency in file
-            f.write(freq.to_bytes(4, byteorder="big", signed= True))
+            f.write(freq.to_bytes(4, byteorder="big", signed=True))
 
         # Write padding
         f.write(bytes([padding]))
-
 
         # Write compressed data
         f.write(compressed_bytes)
@@ -144,16 +150,38 @@ def read_compressed_file(input_path):
     with open(input_path, "rb") as f:
 
         magic = f.read(4)
+
         if magic != b"RAU1":
             raise ValueError("Invalid file format — not a RAU compressed file!")
-        
+
+        ext_len = int.from_bytes(f.read(1), "big")
+        ext = f.read(ext_len).decode()
+
         frequency_list_len = f.read(1)[0]
 
-        frequency_list = [int.from_bytes(f.read(4), "big", signed= True) for _ in range(frequency_list_len)]
+        frequency_list = [
+            int.from_bytes(f.read(4), "big", signed=True)
+            for _ in range(frequency_list_len)
+        ]
         frequency_list = decode_frequency_list(frequency_list)
 
         padding = ord(f.read(1))
 
         compressed_bytes = f.read()
 
-    return frequency_list, compressed_bytes, padding
+    return frequency_list, compressed_bytes, padding, ext
+
+
+def compress_file(input_file, output_dir):
+    data = read_file_as_bytes(input_file)
+    frequency = get_frequency_list(data=data)
+
+    root = create_huffman_tree(frequency)
+    codes = generate_codes(root)
+    encoded_bitstring = "".join(codes[char] for char in data)
+
+    name, _ = os.path.splitext(os.path.basename(input_file))
+
+    final_path = os.path.join(output_dir, name + ".rau")
+
+    write_compressed_file(input_file, final_path, encoded_bitstring, frequency)
