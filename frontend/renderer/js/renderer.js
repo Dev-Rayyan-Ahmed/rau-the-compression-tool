@@ -38,10 +38,10 @@ dropZone.addEventListener("dragleave", () => {
 // for live logs
 // just like window.addEventListener
 window.electronAPI.onStdout(chunk => {
-    log.textContent += chunk;
+    updateOutput(chunk)
 });
 window.electronAPI.onStderr(chunk => {
-    log.textContent += 'ERR: ' + chunk;
+    updateOutput('ERR: ' + chunk)
 });
 
 // for min max and close control
@@ -66,8 +66,8 @@ async function loadFile(e) {
     const { fileName, filePath } = await window.electronAPI.openFile();
     if (filePath) {
         selectedFilePath = filePath; // full path
-        outputPath = window.path.join(os.homedir(), 'compressed-file')
-        updateOutput(`Selected file: ${fileName} Output file : ${outputPath}`)
+        outputPath = window.path.dirname(filePath)
+        updateOutput(`Selected file: ${fileName} <br> Output file : ${outputPath}`)
     }
 }
 
@@ -84,19 +84,26 @@ async function dropFile(e) {
 async function runCompression(e, option) {
     const filePath = selectedFilePath;
     if (!filePath) return alertError("select a file first")
+    const dirName = window.path.dirname(filePath);
     const scriptPath = 'app.main'
+    console.log(scriptPath, option, filePath, dirName)
     updateOutput('Starting...\n');
 
-    const resultPromise = window.electronAPI.runHuffman(scriptPath, option, filePath);
+    const resultPromise = window.electronAPI.runHuffman(scriptPath, option, filePath, dirName);
 
     // live logs already set below via onStdout/onStderr
     const result = await resultPromise;
+    console.log(result);
     if (!result.success) {
-        updateOutput("Error: Failed To compress File. try again");
+        if (option == "-c")
+            updateOutput("Error: Failed To compress File. Not a text file try again");
+        else
+            updateOutput("Error: File is not perfect rau file")
+    } else {
+        updateOutput("Success: File Saved in Folder:" + `${dirName}`);
+        selectedFilePath = null;
     }
 
-    updateOutput("Success: File Saved in Folder:" + `${outputPath}`);
-    selectedFilePath = null;
 
 }
 
@@ -107,14 +114,19 @@ function isFileTypeCorrect(file) {
 }
 
 function alertError(message) {
-    Toastify.toast({
-        text: message,
-        duration: 5000,
-        close: false,
+    window.Toastify.toast({
+        text: "⚠️ " + message,  
+        duration: 4000,
+        close: true,
+        gravity: "top",
+        position: "center",
         style: {
-            background: "red",
-            color: "white",
-            textAlign: 'center'
+            background: "#330000",   
+            borderLeft: "5px solid #ff3333", 
+            color: "#ffcccc",        
+            fontSize: "16px",
+            // borderRadius: "5px",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
         }
     });
 }

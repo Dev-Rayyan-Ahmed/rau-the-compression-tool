@@ -108,11 +108,11 @@ ipcMain.handle('dialog:openFile', async () => {
 });
 
 // 
-ipcMain.handle('huffman:run', async (event, scriptPath, option, filePath) => {
+ipcMain.handle('huffman:run', async (event, scriptPath, option, filePath, dirName) => {
     const promise = new Promise((resolve, rejects) => {
 
         const command = process.platform === 'win32' ? 'python' : 'python3';
-        const args = ['-m', scriptPath, option, filePath];
+        const args = ['-m', scriptPath, option, filePath, dirName];
 
         // now run a sub process of python script 
         const py = spawn(command, args, { cwd: PYTHON_ROOT_DIR });

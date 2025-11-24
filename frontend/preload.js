@@ -9,7 +9,8 @@ contextBridge.exposeInMainWorld('os', {
 })
 
 contextBridge.exposeInMainWorld('path', {
-    join: (...args) => path.join(...args)
+    join: (...args) => path.join(...args),
+    dirname: (...args) => path.dirname(...args)
 })
 
 contextBridge.exposeInMainWorld('Toastify', {
@@ -43,8 +44,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
 
     // run huffman; returns result object promise
-    runHuffman: (scriptPath, option, filePath) =>
-        ipcRenderer.invoke('huffman:run', scriptPath, option, filePath),
+    runHuffman: (scriptPath, option, filePath, dirName) =>
+        ipcRenderer.invoke('huffman:run', scriptPath, option, filePath, dirName),
 
     // on stdout/stderr events for live progress of python script
     onStdout: (cb) => ipcRenderer.on('huffman:stdout', (_, chunk) => cb(chunk)),
