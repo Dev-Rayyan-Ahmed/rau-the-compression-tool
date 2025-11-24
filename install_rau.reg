@@ -1,0 +1,40 @@
+Windows Registry Editor Version 5.00
+
+; Compress with RAU - Show on ALL files
+[HKEY_CLASSES_ROOT\*\shell\RAUCompress]
+@="Compress with RAU"
+"Icon"="C:\\Windows\\RAU1.ico"
+
+[HKEY_CLASSES_ROOT\*\shell\RAUCompress\command]
+@="cmd.exe /c \"cd /d \"C:\\Users\\Hp\\3rd_semester\\rau-the-compression-tool\" && pythonw -m app.main -c \"%1\"\""
+
+; Associate .rau file extension
+[HKEY_CLASSES_ROOT\.rau]
+@="RAUFile"
+"Content Type"="application/x-rau"
+
+[HKEY_CLASSES_ROOT\RAUFile]
+@="RAU Compressed File"
+"FriendlyTypeName"="RAU Compressed File"
+
+[HKEY_CLASSES_ROOT\RAUFile\DefaultIcon]
+@="C:\\Windows\\RAU1.ico"
+
+; Default action on double-click
+[HKEY_CLASSES_ROOT\RAUFile\shell]
+@="Decompress"
+
+[HKEY_CLASSES_ROOT\RAUFile\shell\Decompress]
+@="Decompress with RAU"
+"Icon"="C:\\Windows\\RAU1.ico"
+
+[HKEY_CLASSES_ROOT\RAUFile\shell\Decompress\command]
+@="cmd.exe /c \"cd /d \"C:\\Users\\Hp\\3rd_semester\\rau-the-compression-tool\" && pythonw -m app.main -d \"%1\"\""
+
+; Right-click decompress option (alternate way to access)
+[HKEY_CLASSES_ROOT\RAUFile\shell\DecompressAlt]
+@="Extract Here"
+"Icon"="C:\\Windows\\RAU1.ico"
+
+[HKEY_CLASSES_ROOT\RAUFile\shell\DecompressAlt\command]
+@="cmd.exe /c \"cd /d \"C:\\Users\\Hp\\3rd_semester\\rau-the-compression-tool\" && pythonw -m app.main -d \"%1\"\""
